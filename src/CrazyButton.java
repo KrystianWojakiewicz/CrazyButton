@@ -1,5 +1,6 @@
 import java.awt.Dimension;
 import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Random;
@@ -18,8 +19,8 @@ public class CrazyButton {
 	
 	int randomWidth;
 	int randomHeight;
-	
-	
+	static int counter = 1;
+	static int animationSpeed = 10;
 	
 	public CrazyButton(JDialog dialog, final Dimension screenDim) {
 		
@@ -35,7 +36,11 @@ public class CrazyButton {
 			private static final long serialVersionUID = 1L;
 
 			public void actionPerformed(ActionEvent e) {
-				Point newPosition = checkNewPosition();
+				int X = (int) Math.pow(randomWidth, 2);
+				int Y = (int) Math.pow(randomHeight, 2);
+				
+				int eulerLength = (int) Math.sqrt(X + Y);
+				Point newPosition = checkNewPosition(eulerLength);
 				btnPressMe.setLocation(newPosition);
 				}
 			};
@@ -47,35 +52,37 @@ public class CrazyButton {
 				
 				randomWidth = rand.nextInt(screenDim.width - btnPressMe.getSize().width);
 				randomHeight = rand.nextInt(screenDim.height - btnPressMe.getSize().height);
-				//btnPressMe.setLocation(randomWidth, randomHeight);
-				timer = new Timer(1, paintTimer);
+				timer = new Timer(animationSpeed, paintTimer);
 				timer.start();
 				}
 		});
 	}
-	private Point checkNewPosition() {
+	private Point checkNewPosition(int eulerLength) {
 		if( (btnPressMe.getBounds().x == randomWidth) && (btnPressMe.getBounds().y == randomHeight) )
 			timer.stop();
 		
 		int newLocationY = randomHeight;
 		int newLocationX = randomWidth;
 		
+		int normalizer = 50;
+		
 		if(btnPressMe.getBounds().x < randomWidth) {
 			int diff = randomWidth - btnPressMe.getBounds().x;
-			newLocationX = btnPressMe.getBounds().x + diff/50;
+			newLocationX = (int) Math.ceil(btnPressMe.getBounds().x + diff/normalizer);
+			
 		}
 		else if(btnPressMe.getBounds().x > randomWidth) {
 			int diff = btnPressMe.getBounds().x - randomWidth;
-			newLocationX = btnPressMe.getBounds().x - diff/50;
+			newLocationX = (int) Math.ceil(btnPressMe.getBounds().x - diff/normalizer);
 		}
 		
 		if(btnPressMe.getBounds().y < randomHeight) {
 			int diff = randomHeight - btnPressMe.getBounds().y;
-			newLocationY = btnPressMe.getBounds().y + diff/50; 
+			newLocationY = (int) Math.ceil(btnPressMe.getBounds().y + diff/normalizer); 
 		}
 		else if(btnPressMe.getBounds().y > randomHeight) {
 			int diff = btnPressMe.getBounds().y - randomHeight;
-			newLocationY = btnPressMe.getBounds().y - diff/50; 
+			newLocationY = (int) Math.ceil(btnPressMe.getBounds().y - diff/normalizer);
 		}
 		
 		Point point = new Point(newLocationX, newLocationY);
